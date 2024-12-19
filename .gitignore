@@ -1,25 +1,32 @@
-# If you prefer the allow list template instead of the deny list, see community template:
-# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
-#
-# Binaries for programs and plugins
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
+package main
 
-# Test binary, built with `go test -c`
-*.test
+import (
+	"fmt"
+	"net/http"
+	"strconv"
+)
 
-# Output of the go coverage tool, specifically when used with LiteIDE
-*.out
+var counter int
 
-# Dependency directories (remove the comment below to include it)
-# vendor/
+func GetHAndler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		fmt.Fprintln(w, "Counter равен", strconv.Itoa(counter))
+	} else {
+		fmt.Fprintln(w, "Поддерживается только метод GET")
+	}
+}
 
-# Go workspace file
-go.work
-go.work.sum
+func PostHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		counter++
+		fmt.Fprintln(w, "Counter увеличен на 1")
+	} else {
+		fmt.Fprintln(w, "Поддерживается только метод POST")
+	}
+}
 
-# env file
-.env
+func main() {
+	http.HandleFunc("/get", GetHAndler)
+	http.HandleFunc("/post", PostHandler)
+	http.ListenAndServe("localhost:8080", nil)
+}
